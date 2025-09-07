@@ -4,6 +4,7 @@ import { getUserData } from '../utils/user'
 import { validateISOString } from '../utils/dates'
 import { addTransactions, getTransactions, validateTransactions } from '../utils/transactions'
 import type { Filters, Transaction } from '../types/transactions'
+import { HttpError } from '../types/HttpError'
 
 const transactionsRoutes = Router()
 
@@ -51,7 +52,15 @@ transactionsRoutes.post('/', async (req, res) => {
     }
 
     await addTransactions(user.uid, transactions)
-  } catch {
+
+    const allData = await getTransactions(user.uid)
+    res.status(200).json({ data: allData })
+  } catch (e) {
+    if (e instanceof HttpError) {
+      res.status(e.status).json({ message: e.message })
+      return
+    }
+
     res.status(500).json({ message: 'Internal server error' })
   }
 })

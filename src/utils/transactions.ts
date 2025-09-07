@@ -7,39 +7,34 @@ import {
 } from '../types/transactions'
 import { adminFS } from './firebase'
 import { validateISOString } from './dates'
+import { ValidationError } from '../types/HttpError'
 
 export const validateTransactions = (list: Transaction[]): boolean => {
   if (!list || !Array.isArray(list)) {
-    throw new Error('Payload must be an array of transactions')
+    throw new ValidationError('Payload must be an array of transactions')
   }
 
-  // return list.every((item) => {
-  //   return (
-  //     validateISOString(item.date) &&
-  //     typeof item.amount === 'number' &&
-  //     !!item.type &&
-  //     Object.keys(TransactionTypes).includes(item.type)
-  //   )
-  // })
   list.forEach((tx) => {
     if (typeof tx !== 'object' || tx === null) {
-      throw new Error('transaction must be a valid object')
+      throw new ValidationError('transaction must be a valid object')
     }
 
     const { amount, date, type } = tx
 
     if (typeof amount !== 'number' || amount <= 0 || amount > 99_999_999) {
-      throw new Error(
+      throw new ValidationError(
         'transaction.amount must be an Integer and must be larger than 0 and less than 99 999 999',
       )
     }
 
     if (typeof date !== 'string' || !validateISOString(date)) {
-      throw new Error('transaction.date must be an ISO string')
+      throw new ValidationError('transaction.date must be an ISO string')
     }
 
     if (typeof type !== 'string' || !(type in TransactionTypes)) {
-      throw new Error(`transaction.type must be one of: ${Object.keys(TransactionTypes).join()}`)
+      throw new ValidationError(
+        `transaction.type must be one of: ${Object.keys(TransactionTypes).join(', ')}`,
+      )
     }
   })
 

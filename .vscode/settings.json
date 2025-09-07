@@ -1,0 +1,8 @@
+{
+  "eslint.useFlatConfig": true,
+  "prettier.endOfLine": "lf",
+  "files.eol": "\n",
+  "css.lint.unknownAtRules": "ignore",
+  "editor.tabSize": 2,
+  "prettier.useTabs": false
+}

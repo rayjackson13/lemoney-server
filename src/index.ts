@@ -1,12 +1,15 @@
 import './env'
 import express from 'express'
+import http from 'http'
 import cookieParser from 'cookie-parser'
 import cors, { type CorsOptions } from 'cors'
 import { authRoutes } from './routes/auth'
 import { transactionsRoutes } from './routes/transactions'
+import { initializeSockets } from './ws'
 
 const app = express()
 const port = process.env.PORT || 3000
+const server = http.createServer(app)
 
 app.use(express.json())
 app.use(cookieParser())
@@ -38,6 +41,8 @@ app.get('/api/hello', (_req, res) => {
 app.use('/auth', authRoutes)
 app.use('/transactions', transactionsRoutes)
 
-app.listen(Number(port), () => {
+initializeSockets(server)
+
+server.listen(Number(port), () => {
   console.log(`🚀 Server running at http://localhost:${port}`)
 })

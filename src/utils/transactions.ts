@@ -1,10 +1,5 @@
 import type { CollectionReference, Query } from 'firebase-admin/firestore'
-import {
-  TransactionTypes,
-  type Filters,
-  type Transaction,
-  type TransactionDTO,
-} from '../types/transactions'
+import { TransactionTypes, type Transaction, type TransactionDTO } from '../types/transactions'
 import { adminFS } from './firebase'
 import { validateISOString } from './dates'
 import { ValidationError } from '../types/HttpError'
@@ -41,15 +36,8 @@ export const validateTransactions = (list: Transaction[]): boolean => {
   return true
 }
 
-export const getTransactions = async (
-  userId: string,
-  filters?: Filters,
-): Promise<TransactionDTO[]> => {
-  let query: CollectionReference | Query = adminFS.collection(`/users/${userId}/transactions`)
-
-  if (filters?.dateFrom) query = query.where('date', '>=', filters.dateFrom)
-
-  if (filters?.dateTo) query = query.where('date', '<=', filters.dateTo)
+export const getTransactions = async (userId: string): Promise<TransactionDTO[]> => {
+  const query: CollectionReference | Query = adminFS.collection(`/users/${userId}/transactions`)
 
   const snapshot = await query.get()
   if (snapshot.empty) {

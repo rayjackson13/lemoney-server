@@ -1,6 +1,7 @@
 import './env'
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import cors, { type CorsOptions } from 'cors'
 import { authRoutes } from './routes/auth'
 import { transactionsRoutes } from './routes/transactions'
 
@@ -14,6 +15,21 @@ app.use((_req, res, next) => {
   res.setHeader('Content-Type', 'application/json')
   next()
 })
+
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:4173']
+
+const corsOptions: CorsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true, // allow cookies and auth headers
+}
+
+app.use(cors(corsOptions))
 
 app.get('/api/hello', (_req, res) => {
   res.status(200).json({ message: '👋 Hello from TypeScript Express' })

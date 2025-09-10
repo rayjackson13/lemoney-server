@@ -1,6 +1,7 @@
 import { Router } from 'express'
 
 import { adminAuth } from '../utils/firebase'
+import { getUserData } from '../utils/user'
 
 type LoginRequestParams = {
   accessToken: string
@@ -49,6 +50,26 @@ authRoutes.post('/login', async (req, res) => {
     })
   } catch (error) {
     console.error('Auth error:', error)
+    return res.status(500).json({
+      message: 'Internal server error',
+    })
+  }
+})
+
+/* GET /auth/userInfo */
+authRoutes.get('/userInfo', async (req, res) => {
+  const sessionCookie = req.cookies['__session']
+
+  try {
+    const user = await getUserData(sessionCookie)
+
+    if (user) {
+      return res.status(200).json({ data: user })
+    }
+
+    return res.status(401).json({ message: 'Unauthorized' })
+  } catch (error) {
+    console.error('Could not verify session', error)
     return res.status(500).json({
       message: 'Internal server error',
     })

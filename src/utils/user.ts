@@ -6,11 +6,6 @@ export const getUserData = async (
 ): Promise<DecodedIdToken | null> => {
   if (!sessionCookie) return null
 
-  try {
-    const decodedToken = await adminAuth.verifySessionCookie(sessionCookie)
-    return decodedToken ?? null
-  } catch (e) {
-    console.error(e)
-    return null
-  }
+  const decodedToken = await adminAuth.verifySessionCookie(sessionCookie)
+  return decodedToken ?? null
 }

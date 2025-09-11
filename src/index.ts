@@ -44,5 +44,5 @@ app.use('/transactions', transactionsRoutes)
 initializeSockets(server)
 
 server.listen(Number(port), () => {
-  console.log(`🚀 Server running at http://localhost:${port}`)
+  console.debug(`🚀 Server running at http://localhost:${port}`)
 })

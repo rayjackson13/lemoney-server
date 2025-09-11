@@ -7,7 +7,6 @@ export const initializeSockets = (server: Server) => {
   server.on('upgrade', async (req, socket, head) => {
     const { url } = req
     const cookies = cookie.parse(req.headers.cookie ?? '')
-    console.log(cookies)
     const sessionCookie = cookies['__session']
 
     if (!sessionCookie) {

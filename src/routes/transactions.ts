@@ -1,44 +1,33 @@
 import { Router } from 'express'
 
-import { getUserData } from '../utils/user'
-import { addTransactions, getTransactions, validateTransactions } from '../utils/transactions'
+import {
+  addTransactions,
+  deleteTransaction,
+  getTransactions,
+  validateTransactions,
+} from '../utils/transactions'
 import type { Transaction } from '../types/transactions'
-import { HttpError } from '../types/HttpError'
+import { checkUser } from '../middleware/checkUser'
+import { asyncHandler } from '../middleware/asyncHandler'
 
 const transactionsRoutes = Router()
 
+transactionsRoutes.use(checkUser)
+
 /* GET /transactions */
-transactionsRoutes.get('/', async (req, res) => {
-  const sessionCookie = req.cookies['__session']
-
-  try {
-    const user = await getUserData(sessionCookie)
-
-    if (!user) {
-      res.status(401).json({ message: 'Unauthorized access denied' })
-      return
-    }
-
+transactionsRoutes.get(
+  '/',
+  asyncHandler(async ({ user }, res) => {
     const transactions = await getTransactions(user.uid)
-
-    res.status(200).json({ data: transactions })
-  } catch {
-    res.status(500).json({ message: 'Internal server error' })
-  }
-})
+    return res.status(200).json({ data: transactions })
+  }),
+)
 
 /* POST /transactions */
-transactionsRoutes.post('/', async (req, res) => {
-  const sessionCookie = req.cookies['__session']
-  const transactions = req.body as Transaction[]
-
-  try {
-    const user = await getUserData(sessionCookie)
-
-    if (!user) {
-      res.status(401).json({ message: 'Unauthorized access denied' })
-      return
-    }
+transactionsRoutes.post(
+  '/',
+  asyncHandler(async ({ body, user }, res) => {
+    const transactions = body as Transaction[]
 
     if (!validateTransactions(transactions)) {
       res.status(422).json({ message: 'Incorrect transaction type passed' })
@@ -46,17 +35,21 @@ transactionsRoutes.post('/', async (req, res) => {
     }
 
     await addTransactions(user.uid, transactions)
+    return res.status(200).json({ message: 'Success' })
+  }),
+)
 
-    const allData = await getTransactions(user.uid)
-    res.status(200).json({ data: allData })
-  } catch (e) {
-    if (e instanceof HttpError) {
-      res.status(e.status).json({ message: e.message })
-      return
+/* DELETE /transactions/id */
+transactionsRoutes.delete(
+  '/:id',
+  asyncHandler(async ({ params, user }, res) => {
+    if (!params.id) {
+      return res.status(422).json({ message: 'Incorrect id' })
     }
 
-    res.status(500).json({ message: 'Internal server error' })
-  }
-})
+    await deleteTransaction(user.uid, params.id)
+    return res.status(200).json({ message: 'Success' })
+  }),
+)
 
 export { transactionsRoutes }

@@ -75,3 +75,9 @@ export const addTransactions = async (userId: string, data: Transaction[]): Prom
     await batch.commit()
   }
 }
+
+export const deleteTransaction = async (userId: string, id: string): Promise<void> => {
+  const collection = adminFS.collection(`/users/${userId}/transactions`)
+
+  collection.doc(id).delete()
+}

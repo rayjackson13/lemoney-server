@@ -43,6 +43,10 @@ app.use('/transactions', transactionsRoutes)
 
 initializeSockets(server)
 
+app.use((_req, res) => {
+  res.status(404).json({ message: 'No such route' })
+})
+
 server.listen(Number(port), () => {
   console.debug(`🚀 Server running at http://localhost:${port}`)
 })

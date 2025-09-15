@@ -76,8 +76,18 @@ export const addTransactions = async (userId: string, data: Transaction[]): Prom
   }
 }
 
+export const updateTransaction = async (
+  userId: string,
+  id: string,
+  data: Transaction,
+): Promise<void> => {
+  const collection = adminFS.collection(`/users/${userId}/transactions`)
+
+  await collection.doc(id).update(data)
+}
+
 export const deleteTransaction = async (userId: string, id: string): Promise<void> => {
   const collection = adminFS.collection(`/users/${userId}/transactions`)
 
-  collection.doc(id).delete()
+  await collection.doc(id).delete()
 }

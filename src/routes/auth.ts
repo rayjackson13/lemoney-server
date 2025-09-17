@@ -42,9 +42,8 @@ authRoutes.post('/login', async (req, res) => {
 
     res.cookie('__session', sessionCookie, {
       httpOnly: false,
-      sameSite: 'none',
+      sameSite: 'lax',
       secure: true,
-      domain: 'lemoney-server.vercel.app',
     })
 
     return res.status(200).json({

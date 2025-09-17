@@ -44,6 +44,7 @@ authRoutes.post('/login', async (req, res) => {
       path: '/',
       httpOnly: false,
       sameSite: 'none',
+      secure: true,
     })
 
     return res.status(200).json({

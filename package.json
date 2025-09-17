@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsdown --watch",
-    "build": "tsdown",
+    "dev": "cross-env NODE_ENV=development tsdown --watch",
+    "build": "cross-env NODE_ENV=production tsdown",
     "lint": "eslint ."
   },
   "author": "",
@@ -28,6 +28,7 @@
     "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "cross-env": "^10.0.0",
     "dotenv": "^17.2.2",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",

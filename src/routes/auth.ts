@@ -43,6 +43,7 @@ authRoutes.post('/login', async (req, res) => {
     res.cookie('__session', sessionCookie, {
       path: '/',
       httpOnly: false,
+      sameSite: 'none',
     })
 
     return res.status(200).json({

@@ -22,7 +22,7 @@ app.use((_req, res, next) => {
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
-  'https://lemoney.vercel.app',
+  'https://lemoney-gold.vercel.app',
 ]
 
 const corsOptions: CorsOptions = {

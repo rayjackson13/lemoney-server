@@ -45,6 +45,7 @@ authRoutes.post('/login', async (req, res) => {
       httpOnly: false,
       sameSite: 'none',
       secure: true,
+      domain: 'lemoney-server.vercel.app',
     })
 
     return res.status(200).json({

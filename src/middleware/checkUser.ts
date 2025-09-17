@@ -2,10 +2,11 @@ import type { NextFunction, Request, Response } from 'express'
 import { getUserData } from '../utils/user'
 
 export const checkUser = async (req: Request, res: Response, next: NextFunction) => {
-  const sessionCookie = req.cookies['__session']
+  const rawAuth = req.headers.authorization
+  const token = rawAuth?.replace(/Bearer\s+/, '')
 
   try {
-    const user = await getUserData(sessionCookie)
+    const user = await getUserData(token)
 
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized access denied' })

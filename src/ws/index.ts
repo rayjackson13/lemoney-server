@@ -1,20 +1,18 @@
 import type { Server } from 'http'
-import cookie from 'cookie'
 import { getUserData } from '../utils/user'
 import { transactionsSocket } from './transactions'
 
 export const initializeSockets = (server: Server) => {
   server.on('upgrade', async (req, socket, head) => {
-    const { url } = req
-    const cookies = cookie.parse(req.headers.cookie ?? '')
-    const sessionCookie = cookies['__session']
+    const { url, headers } = req
+    const token = headers.authorization?.replace(/Bearer\s+/, '')
 
-    if (!sessionCookie) {
+    if (!token) {
       return socket.destroy()
     }
 
     try {
-      const user = await getUserData(sessionCookie)
+      const user = await getUserData(token)
       if (!user) {
         return socket.destroy()
       }

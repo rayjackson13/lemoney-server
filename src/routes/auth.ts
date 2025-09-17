@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import { adminAuth } from '../utils/firebase'
-import { getUserData } from '../utils/user'
+import { checkUser } from '../middleware/checkUser'
 
 type LoginRequestParams = {
   accessToken: string
@@ -36,20 +36,13 @@ authRoutes.post('/login', async (req, res) => {
       return
     }
 
-    const sessionCookie = await adminAuth.createSessionCookie(accessToken, {
+    const token = await adminAuth.createSessionCookie(accessToken, {
       expiresIn: 7 * 24 * 60 * 60 * 1000,
-    })
-
-    res.cookie('__session', sessionCookie, {
-      path: '/',
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
     })
 
     return res.status(200).json({
       message: 'Authorization successful',
-      session: sessionCookie,
+      token,
     })
   } catch (error) {
     console.error('Auth error:', error)
@@ -60,31 +53,13 @@ authRoutes.post('/login', async (req, res) => {
 })
 
 /* GET /auth/userInfo */
-authRoutes.get('/userInfo', async (req, res) => {
-  const sessionCookie = req.cookies['__session']
-
-  try {
-    const user = await getUserData(sessionCookie)
-
-    if (user) {
-      return res.status(200).json({ data: user })
-    }
-
-    return res.status(401).json({ message: 'Unauthorized' })
-  } catch (error) {
-    console.error('Could not verify session', error)
-    return res.status(500).json({
-      message: 'Internal server error',
-    })
-  }
+authRoutes.get('/userInfo', checkUser, async (req, res) => {
+  return res.status(200).json({ data: req.user })
 })
 
 /* POST /auth/logout */
 authRoutes.post('/logout', async (req, res) => {
-  res.clearCookie('__session', {
-    path: '/',
-    httpOnly: false,
-  })
+  // TODO: de-activate token
 
   return res.status(200).json({
     message: 'Logged out successfully',

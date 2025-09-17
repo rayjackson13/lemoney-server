@@ -41,6 +41,7 @@ authRoutes.post('/login', async (req, res) => {
     })
 
     res.cookie('__session', sessionCookie, {
+      path: '/',
       httpOnly: false,
       sameSite: 'none',
       secure: true,
@@ -48,6 +49,7 @@ authRoutes.post('/login', async (req, res) => {
 
     return res.status(200).json({
       message: 'Authorization successful',
+      session: sessionCookie,
     })
   } catch (error) {
     console.error('Auth error:', error)
